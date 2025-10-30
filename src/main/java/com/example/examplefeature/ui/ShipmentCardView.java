@@ -1,16 +1,16 @@
 package com.example.examplefeature.ui;
 
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.card.Card;
 import com.vaadin.flow.component.card.CardVariant;
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -151,32 +151,7 @@ class ShipmentCardView extends Main {
     }
 
     private Card createCard0() {
-        Card card = new Card();
-        card.addThemeVariants(
-            CardVariant.LUMO_ELEVATED, 
-            CardVariant.LUMO_COVER_MEDIA);
-
-        card.setWidth("400px");
-
-        card.setMedia(new Image(IMAGE_URL, IMAGE_ALT));
-        card.setTitle(TITLE_TEXT);
-        card.setSubtitle(new Span(SUBTITLE_TEXT));
-
-        Avatar avatar = new Avatar("Goodie Transport");
-        avatar.setColorIndex(2);
-        card.setHeaderPrefix(avatar);
-        
-        Span badge = new Span(BADGE_TEXT);
-        badge.getElement().getThemeList().add("badge success");
-        card.setHeaderSuffix(badge);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        primaryBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        card.addToFooter(primaryBtn, new Button(SECONDARY_BUTTON_TEXT));
-
+        Card card = new CarrierCard();
         return card;
     }
     
@@ -387,9 +362,57 @@ class ShipmentCardView extends Main {
         card.setWidth("400px");
 
         card.setTitle(TITLE_TEXT);
-       
+
         card.add(new Paragraph(CARRIER_TEXT));
 
         return card;
+    }
+
+    class CarrierCard extends Card {
+        public CarrierCard() {
+            addThemeVariants(
+                    CardVariant.LUMO_ELEVATED,
+                    CardVariant.LUMO_COVER_MEDIA);
+            setWidth("400px");
+
+            setMedia(new Image(IMAGE_URL, IMAGE_ALT));
+            setHeaderPrefix(new GoodieTransferAvatar());
+            setTitle(TITLE_TEXT);
+            setSubtitle(new Span(SUBTITLE_TEXT)); // WTF, no string version 🤦‍♂️
+            setHeaderSuffix(new InTransitBadget());
+
+            add(
+                    new Paragraph(CARRIER_TEXT),
+                    new Paragraph(SHIPMENT_TEXT)
+            );
+
+            addToFooter(
+                    new UpdateStatusButton(),
+                    new Button(SECONDARY_BUTTON_TEXT)
+            );
+
+        }
+
+        static class InTransitBadget extends Span {
+            public InTransitBadget() {
+                super(BADGE_TEXT);
+                getElement().getThemeList().add("badge success");
+            }
+        }
+
+
+        class UpdateStatusButton extends Button {
+            public UpdateStatusButton() {
+                super(PRIMARY_BUTTON_TEXT);
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            }
+        }
+
+        private class GoodieTransferAvatar extends Avatar {
+            public GoodieTransferAvatar() {
+                super("Goodie Transport");
+                setColorIndex(2);
+            }
+        }
     }
 }
