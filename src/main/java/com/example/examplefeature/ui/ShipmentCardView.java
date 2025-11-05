@@ -12,7 +12,6 @@ import com.vaadin.flow.component.card.CardVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Main;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.markdown.Markdown;
@@ -49,6 +48,19 @@ class ShipmentCardView extends Main {
     private final Button nextButton;
     private final Span cardCounter;
 
+    private ShipmentDto dto = new ShipmentDto(
+            "VDN-45892",
+            "Berlin, DE → Turku, FI",
+            """
+            Carrier: Goodie Transport GmbH
+            
+            Berlin → Travemünde (ferry) → Naantali → Turku. 12 pallets of temperature-controlled goods.
+            """,
+            TransitStatus.IN_TRANSIT,
+            "Goodie Transporter",
+            IMAGE_URL
+    );
+
     ShipmentCardView() {
         addClassNames(
                 LumoUtility.Display.FLEX,
@@ -60,18 +72,18 @@ class ShipmentCardView extends Main {
         getStyle().set("min-height", "100vh");
 
         // Initialize all cards
-        cards.add(createCard11());
-        cards.add(createCard10());
-        cards.add(createCard9());
-        cards.add(createCard8());
-        cards.add(createCard7());
-        cards.add(createCard6());
-        cards.add(createCard5());
-        cards.add(createCard4());
-        cards.add(createCard3());
-        cards.add(createCard2());
-        cards.add(createCard1());
-        cards.add(createCard0());
+        cards.add(cardProcedural(dto));
+        cards.add(createCardClass(dto));
+        cards.add(createCardEditButton(dto));
+        cards.add(primaryButton(dto));
+        cards.add(anotherButton(dto));
+        cards.add(subtitle(dto));
+        cards.add(statusAsBadge(dto));
+        cards.add(statusAsText(dto));
+        cards.add(image(dto));
+        cards.add(covermediaStyle(dto));
+        cards.add(driverAvatar(dto));
+        cards.add(createCard0(dto));
 
         // Create previous button with keyboard shortcut
         prevButton = new Button(VaadinIcon.ARROW_LEFT.create());
@@ -124,7 +136,7 @@ class ShipmentCardView extends Main {
 
         add(navigation);
 
-        currentCardIndex = cards.size() -1;
+        currentCardIndex = 0;
         // Show first card
         updateCardDisplay();
     }
@@ -155,233 +167,198 @@ class ShipmentCardView extends Main {
         cardCounter.setText(String.format("Card %d of %d", currentCardIndex + 1, cards.size()));
     }
 
-    private Card createCard0() {
-        Card card = new ShipmentCard(new ShipmentDto(
-                "VDN-45892",
-                "Berlin, DE → Turku, FI",
-                """
-                Carrier: Goodie Transport GmbH
-                
-                Berlin → Travemünde (ferry) → Naantali → Turku. 12 pallets of temperature-controlled goods.
-                """,
-                TransitStatus.InTransit,
-                "Goodie Transporter",
-                IMAGE_URL
-        ));
-        return card;
+    private Card createCard0(ShipmentDto dto) {
+        // CardVariant.LUMO_ELEVATED whas diff between 0 & 1 🤔, didn't see it in current demo same step here now
+        return new ShipmentCard(dto);
     }
     
-    private Card createCard1() {
-        Card card = new Card();
-        card.addThemeVariants(
-            CardVariant.LUMO_COVER_MEDIA);
+    private Card driverAvatar(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                setSubtitle(dto.route());
+                setHeaderPrefix(new DriverAvatar(dto.driver()));
+                setHeaderSuffix(createStatusBadge(dto.status()));
+                setMedia(new Image(dto.truckImageUrl(), "Truck image"));
 
-        card.setWidth("400px");
+                add(new Markdown(dto.shipmentDescription()));
 
-        card.setMedia(new Image(IMAGE_URL, IMAGE_ALT));
-        card.setTitle(TITLE_TEXT);
-        card.setSubtitle(new Span(SUBTITLE_TEXT));
+                addToFooter(
+                        new PrimaryButton("Update Status", e -> openShipmentForm(dto)),
+                        new Button("Track Shipment", e -> viewOnMap(dto))
+                );
 
-        Avatar avatar = new Avatar("Goodie Transport");
-        avatar.setColorIndex(2);
-        card.setHeaderPrefix(avatar);
-        
-        Span badge = new Span(BADGE_TEXT);
-        badge.getElement().getThemeList().add("badge success");
-        card.setHeaderSuffix(badge);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        primaryBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        card.addToFooter(primaryBtn, new Button(SECONDARY_BUTTON_TEXT));
-
-        return card;
+                addThemeVariants(CardVariant.LUMO_COVER_MEDIA);
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
     }
 
-    private Card createCard2() {
-        Card card = new Card();
-        card.addThemeVariants(
-            CardVariant.LUMO_COVER_MEDIA);
+    private Card covermediaStyle(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                setSubtitle(dto.route());
+                setHeaderSuffix(createStatusBadge(dto.status()));
+                setMedia(new Image(dto.truckImageUrl(), "Truck image"));
 
-        card.setWidth("400px");
+                add(new Markdown(dto.shipmentDescription()));
 
-        card.setMedia(new Image(IMAGE_URL, IMAGE_ALT));
-        card.setTitle(TITLE_TEXT);
-        card.setSubtitle(new Span(SUBTITLE_TEXT));
-        
-        Span badge = new Span(BADGE_TEXT);
-        badge.getElement().getThemeList().add("badge success");
-        card.setHeaderSuffix(badge);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        primaryBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        card.addToFooter(primaryBtn, new Button(SECONDARY_BUTTON_TEXT));
+                addToFooter(
+                        new PrimaryButton("Update Status", e -> openShipmentForm(dto)),
+                        new Button("Track Shipment", e -> viewOnMap(dto))
+                );
 
-        return card;
+                addThemeVariants(CardVariant.LUMO_COVER_MEDIA);
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
     }
 
-    private Card createCard3() {
-        Card card = new Card();
+    private Card image(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                setSubtitle(dto.route());
+                setHeaderSuffix(createStatusBadge(dto.status()));
+                setMedia(new Image(dto.truckImageUrl(), "Truck image"));
 
-        card.setWidth("400px");
+                add(new Markdown(dto.shipmentDescription()));
 
-        card.setMedia(new Image(IMAGE_URL, IMAGE_ALT));
-        card.setTitle(TITLE_TEXT);
-        card.setSubtitle(new Span(SUBTITLE_TEXT));
-        
-        Span badge = new Span(BADGE_TEXT);
-        badge.getElement().getThemeList().add("badge success");
-        card.setHeaderSuffix(badge);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        primaryBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        card.addToFooter(primaryBtn, new Button(SECONDARY_BUTTON_TEXT));
+                addToFooter(
+                        new PrimaryButton("Update Status", e -> openShipmentForm(dto)),
+                        new Button("Track Shipment", e -> viewOnMap(dto))
+                );
 
-        return card;
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
     }
 
-    private Card createCard4() {
-        Card card = new Card();
+    private Card statusAsBadge(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                setSubtitle(dto.route());
+                setHeaderSuffix(createStatusBadge(dto.status()));
+                add(new Markdown(dto.shipmentDescription()));
 
-        card.setWidth("400px");
+                addToFooter(
+                        new PrimaryButton("Update Status", e -> openShipmentForm(dto)),
+                        new Button("Track Shipment", e -> viewOnMap(dto))
+                );
 
-        card.setTitle(TITLE_TEXT);
-        card.setSubtitle(new Span(SUBTITLE_TEXT));
-        
-        Span badge = new Span(BADGE_TEXT);
-        badge.getElement().getThemeList().add("badge success");
-        card.setHeaderSuffix(badge);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        primaryBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        card.addToFooter(primaryBtn, new Button(SECONDARY_BUTTON_TEXT));
-
-        return card;
-    }
-  
-    private Card createCard5() {
-        Card card = new Card();
-
-        card.setWidth("400px");
-
-        card.setTitle(TITLE_TEXT);
-        card.setSubtitle(new Span(SUBTITLE_TEXT));
-        
-        Span badge = new Span(BADGE_TEXT);
-        card.setHeaderSuffix(badge);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        primaryBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        card.addToFooter(primaryBtn, new Button(SECONDARY_BUTTON_TEXT));
-
-        return card;
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
     }
 
-    private Card createCard6() {
-        Card card = new Card();
 
-        card.setWidth("400px");
+    private Card statusAsText(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                setSubtitle(dto.route());
+                setHeaderSuffix(new Span(dto.status().name()));
+                add(new Markdown(dto.shipmentDescription()));
 
-        card.setTitle(TITLE_TEXT);
-        card.setSubtitle(new Span(SUBTITLE_TEXT));
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        primaryBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        card.addToFooter(primaryBtn, new Button(SECONDARY_BUTTON_TEXT));
+                addToFooter(
+                        new PrimaryButton("Update Status", e -> openShipmentForm(dto)),
+                        new Button("Track Shipment", e -> viewOnMap(dto))
+                );
 
-        return card;
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
     }
 
-    private Card createCard7() {
-        Card card = new Card();
+    private Card subtitle(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                setSubtitle(dto.route());
+                add(new Markdown(dto.shipmentDescription()));
 
-        card.setWidth("400px");
+                addToFooter(
+                        new PrimaryButton("Update Status", e -> openShipmentForm(dto)),
+                        new Button("Track Shipment", e -> viewOnMap(dto))
+                );
 
-        card.setTitle(TITLE_TEXT);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        primaryBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        card.addToFooter(primaryBtn, new Button(SECONDARY_BUTTON_TEXT));
-
-        return card;
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
     }
 
-    private Card createCard8() {
-        Card card = new Card();
+    private Card anotherButton(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                add(new Markdown(dto.shipmentDescription()));
 
-        card.setWidth("400px");
+                addToFooter(
+                        new PrimaryButton("Update Status", e -> openShipmentForm(dto)),
+                        new Button("Track Shipment", e -> viewOnMap(dto))
+                );
 
-        card.setTitle(TITLE_TEXT);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        primaryBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        card.addToFooter(primaryBtn);
-
-        return card;
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
     }
 
-    private Card createCard9() {
-        Card card = new Card();
+    private Card primaryButton(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                add(new Markdown(dto.shipmentDescription()));
 
-        card.setWidth("400px");
+                addToFooter(new PrimaryButton("Update Status", e -> openShipmentForm(dto)));
 
-        card.setTitle(TITLE_TEXT);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-        
-        Button primaryBtn = new Button(PRIMARY_BUTTON_TEXT);
-        card.addToFooter(primaryBtn);
-
-        return card;
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
     }
 
-    private Card createCard10() {
-        Card card = new Card();
+    private Card createCardEditButton(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                add(new Markdown(dto.shipmentDescription()));
 
-        card.setWidth("400px");
+                addToFooter(new Button("Update Status", e -> openShipmentForm(dto)));
 
-        card.setTitle(TITLE_TEXT);
-       
-        card.add(new Paragraph(CARRIER_TEXT),
-            new Paragraph(SHIPMENT_TEXT));
-
-        return card;
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
     }
 
-    private Card createCard11() {
-        Card card = new Card();
+    private Card createCardClass(ShipmentDto dto) {
+        class ShipmentCard extends Card {
+            public ShipmentCard(ShipmentDto dto) {
+                setTitle("Shipment #" + dto.id());
+                add(new Markdown(dto.shipmentDescription()));
+                setWidth("400px");
+            }
+        }
+        return new ShipmentCard(dto);
+    }
 
-        card.setWidth("400px");
+    private Card cardProcedural(ShipmentDto dto) {
 
-        card.setTitle(TITLE_TEXT);
+        Card shipmentCard = new Card();
+        shipmentCard.setTitle("Shipment #"+ dto.id());
+        shipmentCard.add(new Markdown(dto.shipmentDescription()));
+        shipmentCard.setWidth("400px");
 
-        card.add(new Paragraph(CARRIER_TEXT));
-
-        return card;
+        return shipmentCard;
     }
 
 
@@ -398,27 +375,43 @@ class ShipmentCardView extends Main {
 
 
 
-public class ShipmentCard extends Card {
-    public ShipmentCard(ShipmentDto dto) {
-        setTitle("Shipment #" + dto.id());
-        //setSubtitle(dto.route()); // Use this in example instead of the next line, even though it dont' compile yet PR not yet released.️
-        setSubtitle(new Span(dto.route()));
-        add(new Markdown(dto.shipmentDescription()));
 
-        setMedia(new Image(dto.truckImageUrl(), "Truck image"));
-        setHeaderPrefix(new DriverAvatar(dto.driver()));
-        setHeaderSuffix(createStatusBadge(dto.status()));
 
-        addToFooter(
-                new PrimaryButton("Update Status", evt -> openShipmentForm(dto)),
-                new Button("Track shipement", evt -> viewOnMap(dto))
-        );
 
-        addThemeVariants(CardVariant.LUMO_COVER_MEDIA);
-        setWidth("400px");
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    class ShipmentCard extends Card {
+        public ShipmentCard(ShipmentDto dto) {
+            setTitle("Shipment #" + dto.id());
+            //setSubtitle(dto.route()); // Use this in example instead of the next line, even though it dont' compile yet PR not yet released.️
+            setSubtitle(new Span(dto.route()));
+            setHeaderPrefix(new DriverAvatar(dto.driver()));
+            setHeaderSuffix(createStatusBadge(dto.status()));
+            setMedia(new Image(dto.truckImageUrl(), "Truck image"));
+
+            add(new Markdown(dto.shipmentDescription()));
+
+            addToFooter(
+                    new PrimaryButton("Update Status", e -> openShipmentForm(dto)),
+                    new Button("Track Shipment", e -> viewOnMap(dto))
+            );
+
+            addThemeVariants(CardVariant.LUMO_COVER_MEDIA);
+            setWidth("400px");
+        }
     }
-
         private void openShipmentForm(ShipmentDto shipment) {
         }
 
@@ -456,5 +449,4 @@ public class ShipmentCard extends Card {
                 setColorIndex(2);
             }
         }
-    }
 }
