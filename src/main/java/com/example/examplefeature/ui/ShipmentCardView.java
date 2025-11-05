@@ -398,7 +398,7 @@ class ShipmentCardView extends Main {
 
 
 
-    class ShipmentCard extends Card {
+    public class ShipmentCard extends Card {
         public ShipmentCard(ShipmentDto dto) {
             setTitle("Shipment #" + dto.id());
             //setSubtitle(dto.route()); // Use this in example instead of the next line, even though it dont' compile yet PR not yet released.️
