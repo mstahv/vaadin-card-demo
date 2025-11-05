@@ -3,7 +3,6 @@ package com.example.examplefeature.ui;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.HtmlComponent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
@@ -157,7 +156,7 @@ class ShipmentCardView extends Main {
     }
 
     private Card createCard0() {
-        Card card = new ShipmentCard(new Shipment(
+        Card card = new ShipmentCard(new ShipmentDto(
                 "VDN-45892",
                 "Berlin, DE → Turku, FI",
                 """
@@ -166,7 +165,8 @@ class ShipmentCardView extends Main {
                 Berlin → Travemünde (ferry) → Naantali → Turku. 12 pallets of temperature-controlled goods.
                 """,
                 TransitStatus.InTransit,
-                "Goodie Transporter"
+                "Goodie Transporter",
+                IMAGE_URL
         ));
         return card;
     }
@@ -399,19 +399,19 @@ class ShipmentCardView extends Main {
 
 
     class ShipmentCard extends Card {
-        public ShipmentCard(Shipment shipment) {
-            setMedia(new Image(IMAGE_URL, IMAGE_ALT));
-            setHeaderPrefix(new DriverAvatar(shipment.driver()));
-            setTitle("Shipment #" + shipment.id());
-            //setSubtitle(shipment.route()); // Use this in example instead of the next line, even though it dont' compile yet PR not yet released.️
-            setSubtitle(new Span(shipment.route()));
-            setHeaderSuffix(createStatusBadge(shipment.status()));
+        public ShipmentCard(ShipmentDto dto) {
+            setTitle("Shipment #" + dto.id());
+            //setSubtitle(dto.route()); // Use this in example instead of the next line, even though it dont' compile yet PR not yet released.️
+            setSubtitle(new Span(dto.route()));
+            add(new Markdown(dto.shipmentDescription()));
 
-            add(new Markdown(shipment.shipmentDescription()));
+            setMedia(new Image(dto.truckImageUrl(), "Truck image"));
+            setHeaderPrefix(new DriverAvatar(dto.driver()));
+            setHeaderSuffix(createStatusBadge(dto.status()));
 
             addToFooter(
-                    new DefaultButton("Update Status", evt -> openShipmentForm(shipment)),
-                    new Button("Track shipement", evt -> viewOnMap(shipment))
+                    new DefaultButton("Update Status", evt -> openShipmentForm(dto)),
+                    new Button("Track shipement", evt -> viewOnMap(dto))
             );
 
             addThemeVariants(CardVariant.LUMO_COVER_MEDIA);
@@ -419,7 +419,7 @@ class ShipmentCardView extends Main {
 
         }
 
-        private void openShipmentForm(Shipment shipment) {
+        private void openShipmentForm(ShipmentDto shipment) {
         }
 
         private Component createStatusBadge(TransitStatus status) {
@@ -427,7 +427,7 @@ class ShipmentCardView extends Main {
             return new InTransitBadge();
         }
 
-        private void viewOnMap(Shipment shipment) {
+        private void viewOnMap(ShipmentDto shipment) {
         }
 
         static class InTransitBadge extends Span {
@@ -439,7 +439,7 @@ class ShipmentCardView extends Main {
 
 
         class DefaultButton extends Button {
-            public DefaultButton(Shipment shipment) {
+            public DefaultButton(ShipmentDto shipment) {
                 super(PRIMARY_BUTTON_TEXT);
                 addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             }
