@@ -1,5 +1,9 @@
 package com.example.examplefeature.ui;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HtmlComponent;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
@@ -12,6 +16,7 @@ import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.markdown.Markdown;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Menu;
@@ -119,7 +124,8 @@ class ShipmentCardView extends Main {
                 .set("flex-shrink", "0");
 
         add(navigation);
-        
+
+        currentCardIndex = cards.size() -1;
         // Show first card
         updateCardDisplay();
     }
@@ -151,7 +157,17 @@ class ShipmentCardView extends Main {
     }
 
     private Card createCard0() {
-        Card card = new CarrierCard();
+        Card card = new ShipmentCard(new Shipment(
+                "VDN-45892",
+                "Berlin, DE → Turku, FI",
+                """
+                Carrier: Goodie Transport GmbH
+                
+                Berlin → Travemünde (ferry) → Naantali → Turku. 12 pallets of temperature-controlled goods.
+                """,
+                TransitStatus.InTransit,
+                "Goodie Transporter"
+        ));
         return card;
     }
     
@@ -368,49 +384,74 @@ class ShipmentCardView extends Main {
         return card;
     }
 
-    class CarrierCard extends Card {
-        public CarrierCard() {
-            addThemeVariants(
-                    CardVariant.LUMO_ELEVATED,
-                    CardVariant.LUMO_COVER_MEDIA);
-            setWidth("400px");
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    class ShipmentCard extends Card {
+        public ShipmentCard(Shipment shipment) {
             setMedia(new Image(IMAGE_URL, IMAGE_ALT));
-            setHeaderPrefix(new GoodieTransferAvatar());
-            setTitle(TITLE_TEXT);
-            setSubtitle(new Span(SUBTITLE_TEXT)); // WTF, no string version 🤦‍♂️
-            setHeaderSuffix(new InTransitBadget());
+            setHeaderPrefix(new DriverAvatar(shipment.driver()));
+            setTitle("Shipment #" + shipment.id());
+            //setSubtitle(shipment.route()); // Use this in example instead of the next line, even though it dont' compile yet PR not yet released.️
+            setSubtitle(new Span(shipment.route()));
+            setHeaderSuffix(createStatusBadge(shipment.status()));
 
-            add(
-                    new Paragraph(CARRIER_TEXT),
-                    new Paragraph(SHIPMENT_TEXT)
-            );
+            add(new Markdown(shipment.shipmentDescription()));
 
             addToFooter(
-                    new UpdateStatusButton(),
-                    new Button(SECONDARY_BUTTON_TEXT)
+                    new DefaultButton("Update Status", evt -> openShipmentForm(shipment)),
+                    new Button("Track shipement", evt -> viewOnMap(shipment))
             );
+
+            addThemeVariants(CardVariant.LUMO_COVER_MEDIA);
+            setWidth("400px");
 
         }
 
-        static class InTransitBadget extends Span {
-            public InTransitBadget() {
+        private void openShipmentForm(Shipment shipment) {
+        }
+
+        private Component createStatusBadge(TransitStatus status) {
+            // hard coded demo...
+            return new InTransitBadge();
+        }
+
+        private void viewOnMap(Shipment shipment) {
+        }
+
+        static class InTransitBadge extends Span {
+            public InTransitBadge() {
                 super(BADGE_TEXT);
                 getElement().getThemeList().add("badge success");
             }
         }
 
 
-        class UpdateStatusButton extends Button {
-            public UpdateStatusButton() {
+        class DefaultButton extends Button {
+            public DefaultButton(Shipment shipment) {
                 super(PRIMARY_BUTTON_TEXT);
                 addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             }
+
+            public DefaultButton(String updateStatus, ComponentEventListener<ClickEvent<Button>> listener) {
+                super(updateStatus, listener);
+            }
         }
 
-        private class GoodieTransferAvatar extends Avatar {
-            public GoodieTransferAvatar() {
-                super("Goodie Transport");
+        private class DriverAvatar extends Avatar {
+            public DriverAvatar(String driverName) {
+                super(driverName);
                 setColorIndex(2);
             }
         }
