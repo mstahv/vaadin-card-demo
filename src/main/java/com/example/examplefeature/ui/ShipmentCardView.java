@@ -446,6 +446,7 @@ class ShipmentCardView extends Main {
 
             public DefaultButton(String updateStatus, ComponentEventListener<ClickEvent<Button>> listener) {
                 super(updateStatus, listener);
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             }
         }
 
