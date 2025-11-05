@@ -398,26 +398,26 @@ class ShipmentCardView extends Main {
 
 
 
-    public class ShipmentCard extends Card {
-        public ShipmentCard(ShipmentDto dto) {
-            setTitle("Shipment #" + dto.id());
-            //setSubtitle(dto.route()); // Use this in example instead of the next line, even though it dont' compile yet PR not yet released.️
-            setSubtitle(new Span(dto.route()));
-            add(new Markdown(dto.shipmentDescription()));
+public class ShipmentCard extends Card {
+    public ShipmentCard(ShipmentDto dto) {
+        setTitle("Shipment #" + dto.id());
+        //setSubtitle(dto.route()); // Use this in example instead of the next line, even though it dont' compile yet PR not yet released.️
+        setSubtitle(new Span(dto.route()));
+        add(new Markdown(dto.shipmentDescription()));
 
-            setMedia(new Image(dto.truckImageUrl(), "Truck image"));
-            setHeaderPrefix(new DriverAvatar(dto.driver()));
-            setHeaderSuffix(createStatusBadge(dto.status()));
+        setMedia(new Image(dto.truckImageUrl(), "Truck image"));
+        setHeaderPrefix(new DriverAvatar(dto.driver()));
+        setHeaderSuffix(createStatusBadge(dto.status()));
 
-            addToFooter(
-                    new DefaultButton("Update Status", evt -> openShipmentForm(dto)),
-                    new Button("Track shipement", evt -> viewOnMap(dto))
-            );
+        addToFooter(
+                new PrimaryButton("Update Status", evt -> openShipmentForm(dto)),
+                new Button("Track shipement", evt -> viewOnMap(dto))
+        );
 
-            addThemeVariants(CardVariant.LUMO_COVER_MEDIA);
-            setWidth("400px");
+        addThemeVariants(CardVariant.LUMO_COVER_MEDIA);
+        setWidth("400px");
 
-        }
+    }
 
         private void openShipmentForm(ShipmentDto shipment) {
         }
@@ -438,13 +438,13 @@ class ShipmentCardView extends Main {
         }
 
 
-        class DefaultButton extends Button {
-            public DefaultButton(ShipmentDto shipment) {
+        class PrimaryButton extends Button {
+            public PrimaryButton(ShipmentDto shipment) {
                 super(PRIMARY_BUTTON_TEXT);
                 addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             }
 
-            public DefaultButton(String updateStatus, ComponentEventListener<ClickEvent<Button>> listener) {
+            public PrimaryButton(String updateStatus, ComponentEventListener<ClickEvent<Button>> listener) {
                 super(updateStatus, listener);
                 addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             }
