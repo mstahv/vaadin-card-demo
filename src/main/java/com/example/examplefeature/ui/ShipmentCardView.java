@@ -72,18 +72,18 @@ class ShipmentCardView extends Main {
         getStyle().set("min-height", "100vh");
 
         // Initialize all cards
-        cards.add(cardProcedural(dto));
-        cards.add(createCardClass(dto));
-        cards.add(createCardEditButton(dto));
-        cards.add(primaryButton(dto));
-        cards.add(anotherButton(dto));
-        cards.add(subtitle(dto));
-        cards.add(statusAsBadge(dto));
-        cards.add(statusAsText(dto));
-        cards.add(image(dto));
-        cards.add(covermediaStyle(dto));
-        cards.add(driverAvatar(dto));
-        cards.add(createCard0(dto));
+        cards.add(_0_cardProcedural(dto));
+        cards.add(_1_createCardClass(dto));
+        cards.add(_2_createCardEditButton(dto));
+        cards.add(_3_primaryButton(dto));
+        cards.add(_4_anotherButton(dto));
+        cards.add(_5_subtitle(dto));
+        cards.add(_6_statusAsBadge(dto));
+        cards.add(_7_statusAsText(dto));
+        cards.add(_8_image(dto));
+        cards.add(_9_covermediaStyle(dto));
+        cards.add(_10_driverAvatar(dto));
+        cards.add(_11_createCard0(dto));
 
         // Create previous button with keyboard shortcut
         prevButton = new Button(VaadinIcon.ARROW_LEFT.create());
@@ -167,12 +167,12 @@ class ShipmentCardView extends Main {
         cardCounter.setText(String.format("Card %d of %d", currentCardIndex + 1, cards.size()));
     }
 
-    private Card createCard0(ShipmentDto dto) {
+    private Card _11_createCard0(ShipmentDto dto) {
         // CardVariant.LUMO_ELEVATED whas diff between 0 & 1 🤔, didn't see it in current demo same step here now
         return new ShipmentCard(dto);
     }
     
-    private Card driverAvatar(ShipmentDto dto) {
+    private Card _10_driverAvatar(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -195,7 +195,7 @@ class ShipmentCardView extends Main {
         return new ShipmentCard(dto);
     }
 
-    private Card covermediaStyle(ShipmentDto dto) {
+    private Card _9_covermediaStyle(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -217,7 +217,7 @@ class ShipmentCardView extends Main {
         return new ShipmentCard(dto);
     }
 
-    private Card image(ShipmentDto dto) {
+    private Card _8_image(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -238,7 +238,7 @@ class ShipmentCardView extends Main {
         return new ShipmentCard(dto);
     }
 
-    private Card statusAsBadge(ShipmentDto dto) {
+    private Card _6_statusAsBadge(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -258,7 +258,7 @@ class ShipmentCardView extends Main {
     }
 
 
-    private Card statusAsText(ShipmentDto dto) {
+    private Card _7_statusAsText(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -277,7 +277,7 @@ class ShipmentCardView extends Main {
         return new ShipmentCard(dto);
     }
 
-    private Card subtitle(ShipmentDto dto) {
+    private Card _5_subtitle(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -295,7 +295,7 @@ class ShipmentCardView extends Main {
         return new ShipmentCard(dto);
     }
 
-    private Card anotherButton(ShipmentDto dto) {
+    private Card _4_anotherButton(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -312,7 +312,7 @@ class ShipmentCardView extends Main {
         return new ShipmentCard(dto);
     }
 
-    private Card primaryButton(ShipmentDto dto) {
+    private Card _3_primaryButton(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -326,7 +326,7 @@ class ShipmentCardView extends Main {
         return new ShipmentCard(dto);
     }
 
-    private Card createCardEditButton(ShipmentDto dto) {
+    private Card _2_createCardEditButton(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -340,7 +340,7 @@ class ShipmentCardView extends Main {
         return new ShipmentCard(dto);
     }
 
-    private Card createCardClass(ShipmentDto dto) {
+    private Card _1_createCardClass(ShipmentDto dto) {
         class ShipmentCard extends Card {
             public ShipmentCard(ShipmentDto dto) {
                 setTitle("Shipment #" + dto.id());
@@ -351,7 +351,7 @@ class ShipmentCardView extends Main {
         return new ShipmentCard(dto);
     }
 
-    private Card cardProcedural(ShipmentDto dto) {
+    private Card _0_cardProcedural(ShipmentDto dto) {
 
         Card shipmentCard = new Card();
         shipmentCard.setTitle("Shipment #"+ dto.id());
